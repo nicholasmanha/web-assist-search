@@ -175,7 +175,7 @@ async function checkCourseArticulation(pdfBuffer, course, key) {
     const cleanCourse = course.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
 
     // Clean PDF text (remove unrendered characters)
-    const cleanText = data.text.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
+    const cleanText = data.text.replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200D\uFEFF]/g, "");
     const startMarker = "To: University of California, Berkeley";
     const endMarker = "END OF AGREEMENT";
 
@@ -200,7 +200,7 @@ async function checkCourseArticulation(pdfBuffer, course, key) {
         college = afterFrom.substring(0, yearIndex).trim();
       }
     }
-    console.log(college);
+    // console.log(college);
     // Search for the course in the text
     const searchPosition = articulations.indexOf(cleanCourse);
 
@@ -217,7 +217,7 @@ async function checkCourseArticulation(pdfBuffer, course, key) {
           arrowIndex,
           arrowIndex + 30
         );
-
+        console.log(articulatedSection)
         // Check if course is NOT articulated
         const notArticulated = [
           "No Course Articulated",
