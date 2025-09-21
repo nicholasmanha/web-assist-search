@@ -176,7 +176,19 @@ async function checkCourseArticulation(pdfBuffer, course, key) {
 
     // Clean PDF text (remove unrendered characters)
     const cleanText = data.text.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
+    const startMarker = "To: University of California, Berkeley";
+    const endMarker = "END OF AGREEMENT";
 
+    const startIndex = cleanText.indexOf(startMarker);
+    const endIndex = cleanText.indexOf(endMarker);
+
+    let articulations = "";
+    if (startIndex !== -1 && endIndex !== -1) {
+      articulations = cleanText.slice(
+        startIndex,
+        endIndex + endMarker.length
+      );
+    }
     let college = "";
 
     // Extract college name from "From:" line
@@ -185,16 +197,16 @@ async function checkCourseArticulation(pdfBuffer, course, key) {
       const afterFrom = cleanText.substring(fromIndex + 6);
       const yearIndex = afterFrom.indexOf("2"); // Look for year like "2021-2022"
       if (yearIndex !== -1) {
-        college = afterFrom.substring(0, yearIndex - 1).trim();
+        college = afterFrom.substring(0, yearIndex).trim();
       }
     }
-    // console.log(college);
+    console.log(college);
     // Search for the course in the text
-    const searchPosition = cleanText.indexOf(cleanCourse);
+    const searchPosition = articulations.indexOf(cleanCourse);
 
     if (searchPosition !== -1) {
       // Look for arrow after the course
-      const afterCourse = cleanText.substring(
+      const afterCourse = articulations.substring(
         searchPosition + cleanCourse.length
       );
       const arrowIndex = afterCourse.indexOf("←");
